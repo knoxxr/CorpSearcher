@@ -95,7 +95,13 @@ export default function Home() {
 
     try {
       const res = await fetch(`/api/search?companyName=${encodeURIComponent(queryName)}`);
-      const candidates = await res.json();
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.details || data.error || 'Failed to search');
+      }
+
+      const candidates = data;
 
       if (candidates.length === 0) {
         updateCompany(id, 'status', 'error');
@@ -115,8 +121,9 @@ export default function Home() {
           return c;
         }));
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      alert(`Search failed: ${e.message}`);
       updateCompany(id, 'status', 'error');
     }
   };
@@ -124,7 +131,13 @@ export default function Home() {
   const fetchCompanyDetails = async (id: string, url: string) => {
     try {
       const res = await fetch(`/api/company?url=${encodeURIComponent(url)}`);
-      const details = await res.json();
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.details || data.error || 'Failed to fetch details');
+      }
+
+      const details = data;
 
       setCompanies(prev => prev.map(c => {
         if (c.id === id) {
@@ -137,8 +150,9 @@ export default function Home() {
         }
         return c;
       }));
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      alert(`Details fetch failed: ${e.message}`);
       updateCompany(id, 'status', 'error');
     }
   };
