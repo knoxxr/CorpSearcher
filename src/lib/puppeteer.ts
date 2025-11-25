@@ -1,5 +1,4 @@
 import puppeteer from 'puppeteer';
-import chromium from '@sparticuz/chromium';
 import { Browser } from 'puppeteer-core';
 
 // Optional: If you want to force local chrome usage even in production for some reason,
@@ -13,6 +12,7 @@ export async function getBrowser(): Promise<Browser> {
     // Production (Vercel/AWS Lambda)
     // We use puppeteer-core + @sparticuz/chromium
     const puppeteerCore = await import('puppeteer-core');
+    const chromium = require('@sparticuz/chromium');
 
     // @sparticuz/chromium specific settings
     // It finds the path to the chromium binary automatically in the lambda environment
