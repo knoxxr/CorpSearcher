@@ -20,7 +20,6 @@ export default function CompanyTable({ companies, onUpdate, onRemove, onSearch, 
                         <th style={{ width: '50px' }}></th>
                         <th style={{ minWidth: '250px' }}>Company Name (Search)</th>
                         <th style={{ minWidth: '120px' }}>Status</th>
-                        <th style={{ minWidth: '150px' }}>Company Name</th>
                         <th style={{ minWidth: '100px' }}>Type</th>
                         <th style={{ minWidth: '100px' }}>CEO</th>
                         <th style={{ minWidth: '150px' }}>Industry</th>
@@ -80,7 +79,6 @@ export default function CompanyTable({ companies, onUpdate, onRemove, onSearch, 
                                 )}
                                 {company.status === 'done' && <span className="status-badge" style={{ background: '#dcfce7', color: '#166534' }}>Done</span>}
                             </td>
-                            <td><input className="input" type="text" value={company.name} onChange={(e) => onUpdate(company.id, 'name', e.target.value)} /></td>
                             <td><input className="input" type="text" value={company.type} onChange={(e) => onUpdate(company.id, 'type', e.target.value)} /></td>
                             <td><input className="input" type="text" value={company.ceo} onChange={(e) => onUpdate(company.id, 'ceo', e.target.value)} /></td>
                             <td><input className="input" type="text" value={company.industry} onChange={(e) => onUpdate(company.id, 'industry', e.target.value)} /></td>

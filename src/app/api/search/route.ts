@@ -17,109 +17,86 @@ export async function GET(request: Request) {
     // Set User-Agent to avoid being blocked/served mobile view
     await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
+    // Use tabType=corp to get corporate info including CEO name
     const searchUrl = `https://www.jobkorea.co.kr/Search/?stext=${encodeURIComponent(queryName)}&tabType=corp&Page_No=1`;
     await page.goto(searchUrl, { waitUntil: 'networkidle2' });
 
     // Extract candidates
     const candidates = await page.evaluate(() => {
       const data: any[] = [];
-      const anchors = Array.from(document.querySelectorAll('a'));
+      // In tabType=corp, the structure is usually a list of .list-item
+      // We look for the company name link and then try to find the CEO name in the description
+      const items = Array.from(document.querySelectorAll('.list-default .list-item'));
 
-      anchors.forEach(a => {
-        const text = a.innerText.trim();
-        const href = a.href;
+      items.forEach(item => {
+        const nameAnchor = item.querySelector('.title a');
+        if (!nameAnchor) return;
 
-        if (!text || href.includes('javascript') || href.includes('#')) return;
+        const name = nameAnchor.textContent?.trim() || '';
+        const link = (nameAnchor as HTMLAnchorElement).href;
 
-        // Check if it looks like a company link
-        if (href.includes('/Company/') || href.includes('/Recruit/Co_Read/')) {
-          // Get context from parent elements
-          let container = a.parentElement;
-          let contextText = '';
+        // Extract other details
+        // The structure usually has .option for details like Industry, Type, etc.
+        // And .desc for description which might contain CEO name
 
-          // We found in testing that the 3rd level parent (great-grandparent) contains the full info
-          // Level 0: Name + Like button
-          // Level 1: Wrapper of Level 0
-          // Level 2: Name + Like + Tags + Type + Address + Industry
+        let ceo = '';
+        let address = '';
+        let industry = '';
+        let type = '';
 
-          // Go up 3 levels if possible
-          if (container?.parentElement?.parentElement) {
-            container = container.parentElement.parentElement;
-            contextText = container.innerText;
-          } else if (container?.parentElement) {
-            container = container.parentElement;
-            contextText = container.innerText;
-          } else if (container) {
-            contextText = container.innerText;
+        // Try to find details in the .option list
+        const options = Array.from(item.querySelectorAll('.option span'));
+        options.forEach(opt => {
+          const text = opt.textContent?.trim() || '';
+          if (text.includes('대표자')) {
+            ceo = text.replace('대표자', '').trim();
+          } else if (['대기업', '중견기업', '중소기업', '외국계', '공공기관', '공기업', '벤처기업'].includes(text)) {
+            type = text;
+          } else if (text.endsWith('시') || text.endsWith('구') || text.endsWith('군') || text.endsWith('도')) {
+            // Heuristic for address
+            if (!address) address = text;
+          } else if (!industry && text.length > 2) {
+            // Heuristic for industry
+            industry = text;
           }
+        });
 
-          if (!contextText) contextText = text;
+        // If CEO not found in options, try to parse from other text nodes if available
+        // But usually tabType=corp has it in the option list or description
 
-          // Parse context text
-          // Example: 삼성전자㈜\n좋아요\n삼성 계열사\n대기업\n경기 수원시\n이동전화기 제조업
-          const lines = contextText.split('\n').map(l => l.trim()).filter(l => l && l !== '좋아요');
-
-          let address = '';
-          let industry = '';
-          let type = '';
-
-          const regions = ['서울', '경기', '인천', '부산', '대구', '광주', '대전', '울산', '세종', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'];
-          const types = ['대기업', '중견기업', '중소기업', '외국계', '공공기관', '공기업', '벤처기업'];
-
-          // Iterate lines to find Address and Type
-          // Industry is usually the line AFTER Address
-          for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-
-            if (types.includes(line)) {
-              type = line;
-            }
-
-            if (regions.some(r => line.startsWith(r))) {
-              address = line;
-              // The next line is likely Industry, if it exists and isn't a type or tag
-              if (i + 1 < lines.length) {
-                const nextLine = lines[i + 1];
-                if (!types.includes(nextLine) && !regions.some(r => nextLine.startsWith(r))) {
-                  industry = nextLine;
-                }
-              }
-            }
-          }
-
-          data.push({
-            name: text,
-            link: href,
-            address: address,
-            industry: industry,
-            type: type
-          });
-        }
+        data.push({
+          name,
+          link,
+          address,
+          industry,
+          type,
+          ceo
+        });
       });
 
-      // Deduplicate
-      const unique: any[] = [];
-      const seen = new Set();
-      data.forEach(item => {
-        if (!seen.has(item.link)) {
-          seen.add(item.link);
-          unique.push(item);
-        }
-      });
-
-      return unique;
+      return data;
     });
 
     // Filter candidates to match the query name somewhat
     // The user wants "Ignore (주)"
     const normalizedQuery = queryName.replace(/\(주\)|주식회사|\s/g, '');
 
-    const filtered = candidates.filter(c => {
+    const filtered = candidates.filter((c: any) => {
       const normalizedName = c.name.replace(/\(주\)|주식회사|\s/g, '');
       return normalizedName.includes(normalizedQuery);
     });
 
-    return NextResponse.json(filtered);
+    // Deduplicate
+    const unique: any[] = [];
+    const seen = new Set();
+    filtered.forEach((item: any) => {
+      if (!seen.has(item.link)) {
+        seen.add(item.link);
+        unique.push(item);
+      }
+    });
+
+    return NextResponse.json(unique);
 
   } catch (error) {
     console.error('Search error:', error);
