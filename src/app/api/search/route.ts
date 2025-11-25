@@ -123,7 +123,10 @@ export async function GET(request: Request) {
 
   } catch (error) {
     console.error('Search error:', error);
-    return NextResponse.json({ error: 'Failed to search companies' }, { status: 500 });
+    return NextResponse.json({
+      error: 'Failed to search companies',
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   } finally {
     if (browser) await browser.close();
   }

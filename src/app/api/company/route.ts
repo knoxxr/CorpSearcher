@@ -67,7 +67,10 @@ export async function GET(request: Request) {
 
     } catch (error) {
         console.error('Details error:', error);
-        return NextResponse.json({ error: 'Failed to fetch company details' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to fetch company details',
+            details: error instanceof Error ? error.message : String(error)
+        }, { status: 500 });
     } finally {
         if (browser) await browser.close();
     }
