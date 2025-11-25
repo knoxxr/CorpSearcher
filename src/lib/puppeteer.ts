@@ -13,14 +13,14 @@ export async function getBrowser(): Promise<Browser> {
     // Production (Vercel/AWS Lambda)
     // We use puppeteer-core + @sparticuz/chromium
     const puppeteerCore = await import('puppeteer-core');
-    
+
     // @sparticuz/chromium specific settings
     // It finds the path to the chromium binary automatically in the lambda environment
     browser = await puppeteerCore.launch({
       args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
+      defaultViewport: { width: 1920, height: 1080 },
       executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
+      headless: true,
     });
   } else {
     // Local Development
