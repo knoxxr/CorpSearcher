@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import puppeteer from 'puppeteer';
+import { getBrowser } from '@/lib/puppeteer';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -11,10 +11,7 @@ export async function GET(request: Request) {
 
     let browser;
     try {
-        browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
+        browser = await getBrowser();
         const page = await browser.newPage();
         await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
