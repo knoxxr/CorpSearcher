@@ -110,7 +110,7 @@ export default function Home() {
         throw new Error(data.details || data.error || 'Failed to search');
       }
 
-      const candidates = data;
+      const candidates = data.filter((c: any) => c.name.length <= 20);
 
       if (candidates.length === 0) {
         updateCompany(id, 'status', 'error');

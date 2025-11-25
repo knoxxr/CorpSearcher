@@ -71,7 +71,7 @@ export default function CompanyTable({ companies, onUpdate, onRemove, onSearch, 
     );
 
     return (
-        <div className="table-container flex-1 overflow-auto relative">
+        <div className="table-container flex-1 overflow-auto relative min-h-0">
             <table className="company-table w-full border-collapse text-sm" style={{ tableLayout: 'fixed' }}>
                 <thead>
                     <tr>
