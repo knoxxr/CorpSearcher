@@ -194,16 +194,17 @@ export default function Home() {
 
   return (
     <main className="flex flex-col h-screen w-screen bg-white">
-      <div className="header p-4 border-b border-gray-200 flex justify-end items-center gap-2 shrink-0">
-        <div className="actions flex gap-2">
-          <button className="btn btn-secondary" onClick={clearAll}>
-            <Trash2 size={16} /> Clear All
+      <div className="header p-4 border-b border-gray-200 flex justify-between items-center shrink-0 bg-white z-20 shadow-sm">
+        <div className="font-semibold text-lg text-slate-700">CorpSearcher</div>
+        <div className="actions flex gap-3">
+          <button className="btn btn-secondary text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200" onClick={clearAll}>
+            <Trash2 size={16} /> Clear
           </button>
-          <button className="btn btn-primary" onClick={exportToExcel}>
-            <Download size={16} /> Export Excel
+          <button className="btn btn-secondary" onClick={exportToExcel}>
+            <Download size={16} /> Export
           </button>
           <button className="btn btn-primary" onClick={addCompanyRow}>
-            <Plus size={16} /> Add Row
+            <Plus size={16} /> Add Company
           </button>
         </div>
       </div>

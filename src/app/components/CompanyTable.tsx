@@ -2,6 +2,7 @@
 
 import { Trash2, Search, AlertCircle } from 'lucide-react';
 import { Company } from '../page';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 interface Props {
     companies: Company[];
@@ -12,23 +13,113 @@ interface Props {
 }
 
 export default function CompanyTable({ companies, onUpdate, onRemove, onSearch, onResolve }: Props) {
+    const [columnWidths, setColumnWidths] = useState<{ [key: string]: number }>({
+        actions: 50,
+        queryName: 250,
+        status: 120,
+        type: 100,
+        ceo: 100,
+        industry: 150,
+        majorBusiness: 200,
+        establishmentDate: 120,
+        revenue: 150,
+        employees: 120,
+        address: 200,
+        homepage: 150
+    });
+
+    const [isResizing, setIsResizing] = useState<string | null>(null);
+    const startXRef = useRef<number>(0);
+    const startWidthRef = useRef<number>(0);
+
+    const handleMouseDown = (e: React.MouseEvent, key: string) => {
+        e.preventDefault();
+        setIsResizing(key);
+        startXRef.current = e.clientX;
+        startWidthRef.current = columnWidths[key];
+        document.body.style.cursor = 'col-resize';
+    };
+
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (!isResizing) return;
+        const diff = e.clientX - startXRef.current;
+        const newWidth = Math.max(50, startWidthRef.current + diff);
+        setColumnWidths(prev => ({ ...prev, [isResizing]: newWidth }));
+    }, [isResizing]);
+
+    const handleMouseUp = useCallback(() => {
+        setIsResizing(null);
+        document.body.style.cursor = 'default';
+    }, []);
+
+    useEffect(() => {
+        if (isResizing) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        }
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isResizing, handleMouseMove, handleMouseUp]);
+
+    const renderResizer = (key: string) => (
+        <div
+            className={`resizer ${isResizing === key ? 'resizing' : ''}`}
+            onMouseDown={(e) => handleMouseDown(e, key)}
+        />
+    );
+
     return (
         <div className="table-container flex-1 overflow-auto relative">
-            <table className="company-table w-full border-collapse text-sm">
+            <table className="company-table w-full border-collapse text-sm" style={{ tableLayout: 'fixed' }}>
                 <thead>
                     <tr>
-                        <th style={{ width: '50px' }}></th>
-                        <th style={{ minWidth: '250px' }}>Company Name (Search)</th>
-                        <th style={{ minWidth: '120px' }}>Status</th>
-                        <th style={{ minWidth: '100px' }}>Type</th>
-                        <th style={{ minWidth: '100px' }}>CEO</th>
-                        <th style={{ minWidth: '150px' }}>Industry</th>
-                        <th style={{ minWidth: '200px' }}>Major Business</th>
-                        <th style={{ minWidth: '120px' }}>Est. Date</th>
-                        <th style={{ minWidth: '150px' }}>Revenue</th>
-                        <th style={{ minWidth: '120px' }}>Employees</th>
-                        <th style={{ minWidth: '200px' }}>Address</th>
-                        <th style={{ minWidth: '150px' }}>Homepage</th>
+                        <th style={{ width: columnWidths.actions }}></th>
+                        <th style={{ width: columnWidths.queryName }}>
+                            Company Name (Search)
+                            {renderResizer('queryName')}
+                        </th>
+                        <th style={{ width: columnWidths.status }}>
+                            Status
+                            {renderResizer('status')}
+                        </th>
+                        <th style={{ width: columnWidths.type }}>
+                            Type
+                            {renderResizer('type')}
+                        </th>
+                        <th style={{ width: columnWidths.ceo }}>
+                            CEO
+                            {renderResizer('ceo')}
+                        </th>
+                        <th style={{ width: columnWidths.industry }}>
+                            Industry
+                            {renderResizer('industry')}
+                        </th>
+                        <th style={{ width: columnWidths.majorBusiness }}>
+                            Major Business
+                            {renderResizer('majorBusiness')}
+                        </th>
+                        <th style={{ width: columnWidths.establishmentDate }}>
+                            Est. Date
+                            {renderResizer('establishmentDate')}
+                        </th>
+                        <th style={{ width: columnWidths.revenue }}>
+                            Revenue
+                            {renderResizer('revenue')}
+                        </th>
+                        <th style={{ width: columnWidths.employees }}>
+                            Employees
+                            {renderResizer('employees')}
+                        </th>
+                        <th style={{ width: columnWidths.address }}>
+                            Address
+                            {renderResizer('address')}
+                        </th>
+                        <th style={{ width: columnWidths.homepage }}>
+                            Homepage
+                            {renderResizer('homepage')}
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,7 +130,6 @@ export default function CompanyTable({ companies, onUpdate, onRemove, onSearch, 
                                     className="btn btn-danger"
                                     onClick={() => onRemove(company.id)}
                                     title="Remove row"
-                                    style={{ padding: '0.25rem' }}
                                 >
                                     <Trash2 size={16} />
                                 </button>
@@ -77,7 +167,7 @@ export default function CompanyTable({ companies, onUpdate, onRemove, onSearch, 
                                         Multiple ({company.candidates?.length})
                                     </div>
                                 )}
-                                {company.status === 'done' && <span className="status-badge" style={{ background: '#dcfce7', color: '#166534' }}>Done</span>}
+                                {company.status === 'done' && <span className="status-badge status-done">Done</span>}
                             </td>
                             <td><input className="input" type="text" value={company.type} onChange={(e) => onUpdate(company.id, 'type', e.target.value)} /></td>
                             <td><input className="input" type="text" value={company.ceo} onChange={(e) => onUpdate(company.id, 'ceo', e.target.value)} /></td>

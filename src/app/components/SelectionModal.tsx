@@ -14,8 +14,8 @@ export default function SelectionModal({ candidates, onSelect, onClose }: Props)
             <div className="modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2 className="modal-title">Select Company</h2>
-                    <button className="btn btn-outline" onClick={onClose} style={{ border: 'none', padding: '0.25rem' }}>
-                        <X size={20} />
+                    <button className="btn btn-secondary" onClick={onClose} style={{ padding: '0.5rem' }}>
+                        <X size={18} />
                     </button>
                 </div>
                 <div className="candidate-list">
