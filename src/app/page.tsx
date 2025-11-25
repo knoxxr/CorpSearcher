@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Download, Trash2, RefreshCw } from 'lucide-react';
+import { Plus, Download, Trash2, RefreshCw, Search } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import CompanyTable from './components/CompanyTable';
 import SelectionModal from './components/SelectionModal';
@@ -72,7 +72,7 @@ export default function Home() {
     };
     setCompanies(prev => {
       console.log('Previous companies:', prev.length);
-      return [...prev, newCompany];
+      return [newCompany, ...prev];
     });
   };
 
@@ -191,29 +191,36 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col h-screen w-screen bg-white">
-      <div className="header p-4 border-b border-gray-200 flex justify-between items-center shrink-0 bg-white z-20 shadow-sm">
-        <div className="font-semibold text-lg text-slate-700">CorpSearcher</div>
-        <div className="actions flex gap-3">
-          <button className="btn btn-secondary text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200" onClick={clearAll}>
-            <Trash2 size={16} /> Clear
-          </button>
-          <button className="btn btn-secondary" onClick={exportToExcel}>
-            <Download size={16} /> Export
-          </button>
-          <button className="btn btn-primary" onClick={addCompanyRow}>
-            <Plus size={16} /> Add Company
-          </button>
+    <main className="app-container">
+      <div className="content-wrapper">
+        <div className="header glass">
+          <div className="logo-section">
+            <div className="logo-icon">
+              <Search size={18} strokeWidth={3} />
+            </div>
+            CorpSearcher
+          </div>
+          <div className="actions">
+            <button className="btn btn-secondary text-red-500 hover:bg-red-50 hover:text-red-600 border-red-100" onClick={clearAll}>
+              <Trash2 size={16} /> Clear
+            </button>
+            <button className="btn btn-secondary" onClick={exportToExcel}>
+              <Download size={16} /> Export
+            </button>
+            <button className="btn btn-primary" onClick={addCompanyRow}>
+              <Plus size={16} /> Add Company
+            </button>
+          </div>
         </div>
-      </div>
 
-      <CompanyTable
-        companies={companies}
-        onUpdate={updateCompany}
-        onRemove={removeCompanyRow}
-        onSearch={handleSearch}
-        onResolve={handleResolve}
-      />
+        <CompanyTable
+          companies={companies}
+          onUpdate={updateCompany}
+          onRemove={removeCompanyRow}
+          onSearch={handleSearch}
+          onResolve={handleResolve}
+        />
+      </div>
 
       {modalOpen && currentResolvingId && (
         <SelectionModal

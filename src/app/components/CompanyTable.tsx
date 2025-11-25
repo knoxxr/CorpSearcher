@@ -71,53 +71,53 @@ export default function CompanyTable({ companies, onUpdate, onRemove, onSearch, 
     );
 
     return (
-        <div className="table-container flex-1 overflow-auto relative min-h-0">
-            <table className="company-table w-full border-collapse text-sm" style={{ tableLayout: 'fixed' }}>
+        <div className="table-container flex-1 overflow-auto relative min-h-0 glass rounded-xl shadow-sm">
+            <table className="company-table w-full text-sm" style={{ tableLayout: 'fixed' }}>
                 <thead>
                     <tr>
                         <th style={{ width: columnWidths.actions }}></th>
                         <th style={{ width: columnWidths.queryName }}>
-                            Company Name (Search)
+                            회사이름 (Search)
                             {renderResizer('queryName')}
                         </th>
                         <th style={{ width: columnWidths.status }}>
-                            Status
+                            상태
                             {renderResizer('status')}
                         </th>
                         <th style={{ width: columnWidths.type }}>
-                            Type
+                            구분
                             {renderResizer('type')}
                         </th>
                         <th style={{ width: columnWidths.ceo }}>
-                            CEO
+                            대표자
                             {renderResizer('ceo')}
                         </th>
                         <th style={{ width: columnWidths.industry }}>
-                            Industry
+                            산업
                             {renderResizer('industry')}
                         </th>
                         <th style={{ width: columnWidths.majorBusiness }}>
-                            Major Business
+                            주요 사업
                             {renderResizer('majorBusiness')}
                         </th>
                         <th style={{ width: columnWidths.establishmentDate }}>
-                            Est. Date
+                            설립일
                             {renderResizer('establishmentDate')}
                         </th>
                         <th style={{ width: columnWidths.revenue }}>
-                            Revenue
+                            매출
                             {renderResizer('revenue')}
                         </th>
                         <th style={{ width: columnWidths.employees }}>
-                            Employees
+                            종업원수
                             {renderResizer('employees')}
                         </th>
                         <th style={{ width: columnWidths.address }}>
-                            Address
+                            주소
                             {renderResizer('address')}
                         </th>
                         <th style={{ width: columnWidths.homepage }}>
-                            Homepage
+                            홈페이지
                             {renderResizer('homepage')}
                         </th>
                     </tr>
