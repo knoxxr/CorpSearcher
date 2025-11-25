@@ -37,21 +37,6 @@
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Layout */
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
 }
