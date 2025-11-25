@@ -193,10 +193,9 @@ export default function Home() {
   };
 
   return (
-    <main className="container">
-      <div className="header">
-        <h1 className="title">CorpSearcher</h1>
-        <div className="actions">
+    <main className="flex flex-col h-screen w-screen bg-white">
+      <div className="header p-4 border-b border-gray-200 flex justify-end items-center gap-2 shrink-0">
+        <div className="actions flex gap-2">
           <button className="btn btn-secondary" onClick={clearAll}>
             <Trash2 size={16} /> Clear All
           </button>

@@ -13,8 +13,8 @@ interface Props {
 
 export default function CompanyTable({ companies, onUpdate, onRemove, onSearch, onResolve }: Props) {
     return (
-        <div className="table-container">
-            <table className="company-table">
+        <div className="table-container flex-1 overflow-auto relative">
+            <table className="company-table w-full border-collapse text-sm">
                 <thead>
                     <tr>
                         <th style={{ width: '50px' }}></th>
