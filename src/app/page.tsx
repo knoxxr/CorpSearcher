@@ -48,18 +48,13 @@ export default function Home() {
     localStorage.setItem('corp-searcher-data', JSON.stringify(companies));
   }, [companies]);
 
-  // Simple UUID generator for non-secure contexts
+  // Simple ID generator
   const generateUUID = () => {
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      return crypto.randomUUID();
-    }
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
   };
 
   const addCompanyRow = () => {
+    console.log('Adding company row...');
     const newCompany: Company = {
       id: generateUUID(),
       queryName: '',
@@ -75,7 +70,10 @@ export default function Home() {
       homepage: '',
       status: 'idle'
     };
-    setCompanies(prev => [...prev, newCompany]);
+    setCompanies(prev => {
+      console.log('Previous companies:', prev.length);
+      return [...prev, newCompany];
+    });
   };
 
   const removeCompanyRow = (id: string) => {
