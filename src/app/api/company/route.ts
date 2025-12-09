@@ -9,6 +9,15 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
 
+    try {
+        const parsedUrl = new URL(url);
+        if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+            return NextResponse.json({ error: 'Invalid protocol' }, { status: 400 });
+        }
+    } catch {
+        return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
+    }
+
     let browser;
     try {
         browser = await getBrowser();
